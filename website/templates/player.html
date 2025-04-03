@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ anime_name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" href="/static/favicon.ico"> <!-- Optional: Add a favicon -->
+    <style>
+        /* --- Styles from previous example (keep relevant ones) --- */
+
+        /* Keep episode list item simple */
+        .episode-list-item {
+            margin-bottom: 5px;
+        }
+
+        .episode-button {
+             width: 100%; /* Make button take full width */
+             text-align: left;
+             /* Retain other .episode-button styles from your style.css */
+        }
+        .episode-button.active {
+             /* Style for the active/selected episode button */
+             background-color: #555;
+             color: white;
+        }
+
+        /* Style for the Download All section (keep as before) */
+        .download-all-section {
+            margin-top: 20px; /* Added margin top */
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .download-all-button {
+             display: inline-block;
+             padding: 8px 15px;
+             background-color: #007bff; /* Blue background */
+             color: white;
+             text-decoration: none;
+             border-radius: 5px;
+             font-weight: bold;
+             cursor: not-allowed; /* Indicate it's not functional yet */
+             opacity: 0.7;
+        }
+         .download-all-button:hover {
+            background-color: #0056b3;
+        }
+        .download-all-note {
+            font-size: 0.85em;
+            color: #555;
+            margin-top: 8px;
+        }
+
+        /* --- NEW/MODIFIED CSS FOR CURRENT EPISODE DOWNLOAD --- */
+        .current-episode-actions {
+            margin-top: 15px; /* Space below the video player */
+            text-align: left; /* Align button to the left */
+        }
+
+        #download-current-episode {
+            display: none; /* Initially hidden */
+            padding: 8px 15px;
+            background-color: #4CAF50; /* Green background */
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 1em;
+            transition: background-color 0.2s ease;
+            cursor: pointer;
+        }
+         #download-current-episode:hover {
+            background-color: #45a049; /* Darker green on hover */
+        }
+
+         /* Style to show the button when it's ready */
+        #download-current-episode.visible {
+            display: inline-block;
+        }
+         /* --- END OF NEW/MODIFIED CSS --- */
+    </style>
+</head>
+<body>
+    <header class="main-header">
+         <a href="{{ url_for('index') }}" class="back-button">← Library</a>
+         <h1>{{ anime_name }}</h1>
+    </header>
+
+    <div class="container">
+
+        {% if not episodes %}
+            <div class="error-message" style="padding: 20px;">
+                No MP4 episodes found for this anime in the directory.
+                <br><br>
+                <a href="{{ url_for('index') }}" class="back-button">← Back to Library</a>
+            </div>
+        {% else %}
+            <div class="player-container">
+
+                <!-- Video Player Section -->
+                <div class="video-section">
+                    <h2 id="current-episode-title">Loading...</h2>
+                    <div class="player-wrapper">
+                        <video id="main-player" controls preload="metadata" style="background-color: #000;">
+                            Your browser doesn't support HTML5 video.
+                        </video>
+                        <div id="loading-indicator" class="loading-indicator" style="display: none;">Loading...</div>
+                    </div>
+                    <div id="video-error" class="error-message" style="display: none; margin-top: 10px;"></div>
+
+                     <!-- ** NEW: Download Current Episode Button Area ** -->
+                     <div class="current-episode-actions">
+                         <a href="#" download="" id="download-current-episode" title="Download current episode">
+                             Download Episode
+                         </a>
+                     </div>
+                     <!-- ** END: Download Current Episode Button Area ** -->
+
+                </div>
+
+                <!-- Episode List Section -->
+                <div class="episode-section">
+
+                     <!-- Download All Section (kept separate) -->
+                     <div class="download-all-section">
+                         <a href="#" class="download-all-button" title="Requires server implementation">
+                             Download All (ZIP)
+                         </a>
+                         <p class="download-all-note">
+                             Note: Downloading all episodes requires server-side processing. This feature is not yet implemented.
+                         </p>
+                     </div>
+
+                    <h3>Episodes</h3>
+                    <ul class="episode-list">
+                        {% for episode in episodes %}
+                        <li class="episode-list-item">
+                            <!-- Play Button Only -->
+                            <button class="episode-button" data-episode-src="{{ url_for('serve_anime', subpath=anime_name + '/' + episode) }}" data-episode-name="{{ episode }}">
+                                {{ episode }}
+                            </button>
+                            <!-- Download link removed from here -->
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const player = document.getElementById('main-player');
+            const episodeButtons = document.querySelectorAll('.episode-button');
+            const currentEpisodeTitle = document.getElementById('current-episode-title');
+            const videoErrorDiv = document.getElementById('video-error');
+            const loadingIndicator = document.getElementById('loading-indicator');
+            // ** NEW: Get reference to the single download button **
+            const downloadCurrentButton = document.getElementById('download-current-episode');
+            let currentActiveButton = null;
+
+            // --- ** NEW: Function to update the download button ** ---
+            function updateDownloadButton(src, name) {
+                if (src && name) {
+                    downloadCurrentButton.href = src;
+                    downloadCurrentButton.setAttribute('download', name); // Use setAttribute for 'download'
+                    downloadCurrentButton.classList.add('visible'); // Make it visible
+                    console.log(`Download button updated for: ${name}`);
+                } else {
+                    // Hide button if src/name is invalid or episode fails
+                    downloadCurrentButton.href = '#'; // Reset href
+                    downloadCurrentButton.removeAttribute('download');
+                    downloadCurrentButton.classList.remove('visible');
+                     console.log('Download button hidden.');
+                }
+            }
+
+            // --- Function to handle selection WHEN USER CLICKS ---
+            function selectEpisode(button, isInitialLoad = false) { // Added flag for initial load
+                if (currentActiveButton) {
+                    currentActiveButton.classList.remove('active');
+                }
+                button.classList.add('active');
+                currentActiveButton = button;
+
+                const episodeSrc = button.getAttribute('data-episode-src');
+                const episodeName = button.getAttribute('data-episode-name');
+
+                console.log(`Selected: ${episodeName}`);
+
+                currentEpisodeTitle.textContent = episodeName;
+                videoErrorDiv.style.display = 'none';
+                videoErrorDiv.textContent = '';
+
+                // ** Update the download button link IMMEDIATELY on selection **
+                updateDownloadButton(episodeSrc, episodeName);
+
+                // Stop any current playback and reset only if NOT initial load
+                if (!isInitialLoad) {
+                    player.pause();
+                    player.removeAttribute('src');
+                    while (player.firstChild) {
+                        player.removeChild(player.firstChild);
+                    }
+                    player.load(); // Important to reset the player state
+                }
+
+
+                // Set the new source
+                player.src = episodeSrc;
+
+                // Play only if it was a user click, not initial load
+                if (!isInitialLoad) {
+                    loadingIndicator.style.display = 'block'; // Show loading on click/play attempt
+                    player.play().catch(error => {
+                        console.warn("Playback initiation error (might be loading/autoplay block):", error.message);
+                        // Rely on the 'error' event for definite failures
+                    });
+                } else {
+                     console.log("Initial load, setting src but not autoplaying.");
+                     loadingIndicator.style.display = 'none'; // Hide indicator on initial load
+                     // Preload="metadata" should handle loading what's needed
+                }
+            }
+
+            // --- Video Event Listeners ---
+            player.addEventListener('waiting', () => {
+                console.log('Player waiting...');
+                loadingIndicator.style.display = 'block';
+            });
+            player.addEventListener('canplay', () => {
+                console.log('Player can play.');
+                loadingIndicator.style.display = 'none';
+            });
+             player.addEventListener('playing', () => {
+                console.log('Player playing.');
+                loadingIndicator.style.display = 'none';
+            });
+             player.addEventListener('pause', () => {
+                // loadingIndicator.style.display = 'none'; // Usually not needed on pause
+            });
+             player.addEventListener('ended', () => {
+                 loadingIndicator.style.display = 'none';
+            });
+            player.addEventListener('error', (e) => {
+                loadingIndicator.style.display = 'none';
+                let errorMsg = 'Error loading video: ';
+                // ... (keep your existing robust error handling logic here) ...
+                 const videoError = player.error;
+                 if (videoError) { /* ...detailed error messages... */ }
+                 else { errorMsg += 'An unspecified error occurred.' }
+
+                 if (currentActiveButton) {
+                     errorMsg += ` [File: ${currentActiveButton.getAttribute('data-episode-name')}]`;
+                 }
+                console.error('Video Error Event:', errorMsg, e);
+                videoErrorDiv.textContent = errorMsg;
+                videoErrorDiv.style.display = 'block';
+
+                 // ** Hide download button on error **
+                 updateDownloadButton(null, null);
+            });
+
+            // --- Add Click Listeners to Episode Buttons ---
+            episodeButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                     // Select episode (will handle playing if not active, or toggle if active)
+                     if (this !== currentActiveButton) {
+                         selectEpisode(this, false); // Pass false, indicating it's a user click
+                     } else {
+                         // Toggle play/pause if clicking the already active one
+                         if (player.paused) {
+                             player.play().catch(e => console.warn("Play failed", e));
+                         } else {
+                             player.pause();
+                         }
+                     }
+                });
+            });
+
+            // --- *** AUTO-SELECT FIRST EPISODE ON PAGE LOAD *** ---
+            if (episodeButtons.length > 0) {
+                const firstButton = episodeButtons[0];
+                console.log("Initial load: Selecting first episode.");
+                selectEpisode(firstButton, true); // Pass true, indicating initial load (no autoplay)
+            } else {
+                 // Handle case where there are no episodes listed
+                 if (currentEpisodeTitle) {
+                    currentEpisodeTitle.textContent = "No MP4 episodes found";
+                 }
+                 loadingIndicator.style.display = 'none';
+                 updateDownloadButton(null, null); // Ensure download button is hidden
+            }
+            // --- *** END OF AUTO-SELECT *** ---
+
+        });
+    </script>
+
+    <script>
+        // Keep the script for the placeholder download-all link
+        document.addEventListener('DOMContentLoaded', function() {
+            const downloadAllButton = document.querySelector('.download-all-button');
+            if (downloadAllButton) {
+                downloadAllButton.addEventListener('click', function(event) {
+                    if (this.getAttribute('href') === '#') {
+                        event.preventDefault();
+                        alert('This feature requires server-side implementation to create a ZIP file.');
+                    }
+                });
+            }
+        });
+    </script>
+
+</body>
+</html>

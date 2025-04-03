@@ -1,0 +1,333 @@
+/* static/style.css */
+
+/* --- Global Styles & Dark Theme --- */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    margin: 0;
+    background-color: #141414; /* Netflix-like dark background */
+    color: #e5e5e5; /* Light text color */
+    line-height: 1.4;
+}
+
+.container {
+    max-width: 95%; /* Use percentage for better fluidity */
+    margin: 0 auto; /* Center container */
+    padding: 20px 15px; /* Add some padding */
+}
+
+a {
+    color: #007bff; /* Standard link blue, adjust if needed */
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* --- Header --- */
+.main-header {
+    background-color: #141414; /* Match body background or make slightly different */
+    padding: 15px 30px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+    position: sticky; /* Keep header visible on scroll */
+    top: 0;
+    z-index: 1000;
+    display: flex; /* Use flex for alignment */
+    align-items: center;
+}
+
+.main-header h1 {
+    margin: 0;
+    font-size: 1.8em;
+    color: #e50914; /* Netflix red for title */
+    font-weight: bold;
+    flex-grow: 1; /* Allow title to take space */
+}
+
+/* Header Back Button (if used on player page etc) */
+.main-header a.back-button {
+    color: #ccc;
+    text-decoration: none;
+    margin-right: 20px; /* Space between button and title */
+    padding: 5px 10px;
+    border-radius: 3px;
+    transition: background-color 0.2s ease;
+    border: 1px solid #444;
+}
+.main-header a.back-button:hover {
+    background-color: #333;
+    color: white;
+}
+
+/* --- Section Titles (like "My Collection") --- */
+h2 {
+    color: #e5e5e5;
+    font-size: 1.6em;
+    margin-top: 30px;
+    margin-bottom: 20px;
+    padding-left: 10px; /* Indent title slightly */
+    border-left: 4px solid #e50914; /* Red accent line */
+}
+
+/* --- Error Message Styling --- */
+.error-message {
+    background-color: rgba(229, 9, 20, 0.1); /* Transparent red */
+    color: #f8d7da; /* Light red text */
+    border: 1px solid #e50914;
+    padding: 15px;
+    border-radius: 4px;
+    margin: 20px 0;
+}
+
+/* --- Anime Grid Layout --- */
+.anime-grid {
+    display: flex; /* Use Flexbox for wrapping */
+    flex-wrap: wrap; /* Allow items to wrap to the next line */
+    margin: 0 -10px; /* Negative margin to counteract item margin */
+    padding: 0;
+    list-style: none;
+    justify-content: flex-start; /* Align items to the start */
+    /* For Grid layout instead (alternative): */
+    /* display: grid; */
+    /* grid-template-columns: repeat(auto-fill, minmax(225px, 1fr)); */
+    /* gap: 20px; */
+}
+
+/* --- Individual Anime Item Styling --- */
+.anime-item {
+    background-color: #1e1e1e; /* Slightly lighter than main background */
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    overflow: hidden; /* Crucial for containing image and effects */
+    transition: transform 0.25s ease-in-out, box-shadow 0.25s ease-in-out;
+    display: flex;
+    flex-direction: column; /* Stack image and title vertically */
+
+    /* --- SET FIXED WIDTH & MARGIN --- */
+    width: 225px; /* Fixed width for each item */
+    margin: 15px; /* Spacing around each item */
+    /* If using flexbox grid, this margin provides the gap */
+    /* If using CSS Grid with gap, you might not need margin */
+
+    cursor: pointer; /* Indicate item is clickable */
+}
+
+/* --- Hover Effect --- */
+.anime-item:hover {
+    transform: scale(1.05); /* Enlarge item slightly */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+    z-index: 10; /* Bring hovered item slightly forward */
+    position: relative; /* Needed for z-index to work */
+}
+
+/* --- Link Styling within Item --- */
+.anime-item a {
+    text-decoration: none;
+    color: inherit; /* Use text color defined in .anime-item .title */
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Make link fill the item */
+}
+
+/* --- Anime Poster Image Styling --- */
+.anime-item img {
+    display: block; /* Remove potential extra space below img */
+
+    /* --- DIMENSIONS AND FITTING --- */
+    width: 100%; /* Image takes full width of its container (225px) */
+    height: 318px; /* <<<< YOUR FIXED HEIGHT (Adjust to 338px if preferred) */
+    object-fit: cover; /* <<<< Scales, preserves aspect ratio, crops to fill */
+
+    /* Placeholder Styling */
+    background-color: #333; /* Dark placeholder background */
+    /* Optional: Add an icon or text for broken images via pseudo-elements */
+}
+
+/* --- Anime Title Styling --- */
+.anime-item .title {
+    padding: 10px 12px; /* Adjust padding as needed - keeps text from touching edges */
+    font-size: 0.9em;
+    font-weight: 500;
+    /* text-align: center; */ /* REMOVE OR COMMENT OUT THIS LINE */
+    color: #ccc;
+    min-height: 35px; /* Keep consistent space below image */
+    display: flex;
+    align-items: center; /* Keeps text vertically centered */
+    /* justify-content: center; */ /* REMOVE OR COMMENT OUT THIS LINE */
+    justify-content: flex-start; /* CHANGE to flex-start for left alignment */
+    flex-grow: 1; /* Allows the title area to fill remaining vertical space */
+
+    /* --- Keep these lines for text overflow --- */
+    white-space: nowrap;     /* Prevent text from wrapping */
+    overflow: hidden;        /* Hide text that overflows the container */
+    text-overflow: ellipsis; /* Display ... for overflowed text */
+    /* --- END OF TEXT OVERFLOW --- */
+}
+
+/* --- Basic Responsiveness (Optional Adjustments) --- */
+@media (max-width: 768px) {
+    .container {
+        max-width: 100%; /* Full width on smaller screens */
+        padding: 15px 10px;
+    }
+
+    .main-header h1 {
+        font-size: 1.5em;
+    }
+
+    h2 {
+        font-size: 1.4em;
+        margin-top: 20px;
+        margin-bottom: 15px;
+    }
+
+   
+    .anime-item {
+        width: 180px;
+        margin: 10px;
+    }
+    .anime-item img {
+        height: 260px;
+    }
+    */
+
+    /* Center items if flexbox wraps awkwardly */
+    .anime-grid {
+       justify-content: center; /* Center items on smaller screens */
+       margin: 0 -5px; /* Adjust negative margin if item margin changes */
+    }
+    .anime-item {
+        margin: 10px; /* Slightly reduce margin */
+    }
+}
+
+@media (max-width: 480px) {
+    .main-header {
+        padding: 10px 15px;
+    }
+    .main-header h1 {
+        font-size: 1.3em;
+    }
+
+    h2 {
+        font-size: 1.2em;
+    }
+
+    /* Further reduce item size */
+    .anime-item {
+        width: 150px; /* Example smaller width */
+        margin: 8px;
+    }
+    .anime-item img {
+        height: 220px; /* Example smaller height */
+    }
+    .anime-item .title {
+        font-size: 0.85em;
+        min-height: 30px;
+        padding: 8px;
+    }
+     .anime-grid {
+       margin: 0 -8px;
+    }
+}
+
+
+.player-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+.video-section {
+    flex: 3; 
+    min-width: 300px;
+}
+.episode-section {
+    flex: 1; 
+    min-width: 200px;
+    max-height: 70vh; 
+    overflow-y: auto;
+    background-color: #1e1e1e;
+    padding: 10px;
+    border-radius: 5px;
+}
+#main-player {
+    width: 100%;
+    background-color: #000;
+    border-radius: 4px;
+}
+.episode-list { list-style: none; padding: 0; margin: 0; }
+.episode-button { display: block; width: 100%; background: #333; color: #ccc; border: none; padding: 8px 10px; margin-bottom: 5px; text-align: left; border-radius: 3px; cursor: pointer; }
+.episode-button:hover, .episode-button.active { background: #e50914; color: #fff; }
+
+
+
+
+
+
+/* static/style.css */
+
+/* ... (keep all your existing CSS rules before this block) ... */
+
+
+/* --- PERFECT FIT for smaller mobile screens (e.g., <= 480px) --- */
+/* This overrides the 600px styles for even smaller screens */
+@media (max-width: 480px) {
+    .container {
+        /* --- ADJUSTED PADDING --- */
+        /* Increase side padding for a little breathing room */
+        padding-left: 12px;  /* Increased from 5px (adjust 10px, 12px, 15px as needed) */
+        padding-right: 12px; /* Increased from 5px (adjust 10px, 12px, 15px as needed) */
+        /* Keep top/bottom padding if set previously, or default */
+    }
+
+    .anime-grid {
+        /* Grid layout remains the same */
+        display: grid;
+        grid-template-columns: 1fr 1fr; /* Two equal columns */
+        gap: 10px; /* Gap between items (adjust if desired) */
+
+        /* Reset Flexbox properties */
+        justify-content: initial;
+        flex-wrap: initial;
+        margin: 0;
+    }
+
+    .anime-item {
+        /* Width and margin remain handled by the grid */
+        width: auto;
+        margin: 0;
+    }
+
+    .anime-item img {
+        /* Keep height, but monitor if aspect ratio looks off */
+        height: 240px; /* (Adjust if necessary after padding change) */
+    }
+
+    .anime-item .title {
+        /* Title styles remain the same */
+        font-size: 0.8em;
+        min-height: 30px;
+        padding: 8px;
+    }
+
+    /* Optional: Single Column on VERY narrow screens */
+    /*
+    @media (max-width: 360px) {
+        .anime-grid {
+            grid-template-columns: 1fr; // Single column
+            gap: 15px;
+        }
+        .container {
+            padding-left: 10px; // Adjust padding for single column too
+            padding-right: 10px;
+        }
+        .anime-item img {
+            height: 300px;
+        }
+    }
+    */
+}
+
+/* --- End of Mobile Styles --- */
+
+/* ... (rest of your CSS file if any) ... */

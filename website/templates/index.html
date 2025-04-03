@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Anime Hub</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" href="/static/favicon.ico"> <!-- Optional: Add a favicon -->
+</head>
+<body>
+    <header class="main-header">
+        <h1>Anime Hub</h1>
+        <!-- You could add navigation links here later -->
+    </header>
+
+    <div class="container">
+        <h2>My Collection</h2>
+        {% if not anime_list %}
+            <div class="error-message">
+                No anime found in the configured directory. Please check the `ANIME_DIR` path in `app.py` and ensure the directory exists and contains anime folders.
+            </div>
+        {% else %}
+        <div class="anime-grid">
+            {% for anime in anime_list %}
+            <div class="anime-item">
+                <!-- Add title attribute HERE -->
+                <a href="{{ url_for('serve_anime', subpath=anime.name) }}" title="{{ anime.name }}">
+                    <img src="{{ anime.icon }}" alt="{{ anime.name }} Poster">
+                    <!-- The CSS will truncate this display text -->
+                    <div class="title">{{ anime.name }}</div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Optional: Add a footer later
+    <footer>
+        <p>© 2023 Your Anime Server</p>
+    </footer>
+    -->
+</body>
+</html>
