@@ -87,10 +87,6 @@ h2 {
     padding: 0;
     list-style: none;
     justify-content: flex-start; /* Align items to the start */
-    /* For Grid layout instead (alternative): */
-    /* display: grid; */
-    /* grid-template-columns: repeat(auto-fill, minmax(225px, 1fr)); */
-    /* gap: 20px; */
 }
 
 /* --- Individual Anime Item Styling --- */
@@ -102,13 +98,8 @@ h2 {
     transition: transform 0.25s ease-in-out, box-shadow 0.25s ease-in-out;
     display: flex;
     flex-direction: column; /* Stack image and title vertically */
-
-    /* --- SET FIXED WIDTH & MARGIN --- */
     width: 225px; /* Fixed width for each item */
     margin: 15px; /* Spacing around each item */
-    /* If using flexbox grid, this margin provides the gap */
-    /* If using CSS Grid with gap, you might not need margin */
-
     cursor: pointer; /* Indicate item is clickable */
 }
 
@@ -132,183 +123,401 @@ h2 {
 /* --- Anime Poster Image Styling --- */
 .anime-item img {
     display: block; /* Remove potential extra space below img */
-
-    /* --- DIMENSIONS AND FITTING --- */
     width: 100%; /* Image takes full width of its container (225px) */
-    height: 318px; /* <<<< YOUR FIXED HEIGHT (Adjust to 338px if preferred) */
-    object-fit: cover; /* <<<< Scales, preserves aspect ratio, crops to fill */
-
-    /* Placeholder Styling */
+    height: 318px; /* YOUR FIXED HEIGHT */
+    object-fit: cover; /* Scales, preserves aspect ratio, crops to fill */
     background-color: #333; /* Dark placeholder background */
-    /* Optional: Add an icon or text for broken images via pseudo-elements */
 }
 
 /* --- Anime Title Styling --- */
 .anime-item .title {
-    padding: 10px 12px; /* Adjust padding as needed - keeps text from touching edges */
+    padding: 10px 12px;
     font-size: 0.9em;
     font-weight: 500;
-    /* text-align: center; */ /* REMOVE OR COMMENT OUT THIS LINE */
     color: #ccc;
-    min-height: 35px; /* Keep consistent space below image */
+    min-height: 35px;
     display: flex;
-    align-items: center; /* Keeps text vertically centered */
-    /* justify-content: center; */ /* REMOVE OR COMMENT OUT THIS LINE */
-    justify-content: flex-start; /* CHANGE to flex-start for left alignment */
-    flex-grow: 1; /* Allows the title area to fill remaining vertical space */
-
-    /* --- Keep these lines for text overflow --- */
-    white-space: nowrap;     /* Prevent text from wrapping */
-    overflow: hidden;        /* Hide text that overflows the container */
-    text-overflow: ellipsis; /* Display ... for overflowed text */
-    /* --- END OF TEXT OVERFLOW --- */
+    align-items: center;
+    justify-content: flex-start; /* Left alignment */
+    flex-grow: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-/* --- Basic Responsiveness (Optional Adjustments) --- */
+/* --- Player Page Layout Styles --- */
+.player-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-top: 20px; /* Add some space below header */
+}
+.video-section {
+    flex: 3;
+    min-width: 300px; /* Ensure video section has a minimum width */
+    display: flex; /* Use flexbox for column layout */
+    flex-direction: column; /* Stack title, video, actions */
+}
+.episode-section {
+    flex: 1;
+    min-width: 200px; /* Ensure episode list has minimum width */
+    max-height: 70vh; /* Limit height */
+    overflow-y: auto; /* Add scroll if needed */
+    background-color: #1e1e1e; /* Dark background for list area */
+    padding: 15px; /* Padding inside the section */
+    border-radius: 5px;
+}
+
+/* --- Video Player Specific --- */
+#main-player {
+    width: 100%; /* Make player responsive */
+    aspect-ratio: 16/9; /* Maintain aspect ratio */
+    background-color: #000;
+    border-radius: 4px;
+    margin-top: 10px; /* Space below title */
+    margin-bottom: 10px; /* Space above actions */
+}
+
+.player-wrapper { /* Optional: if you need a wrapper around the video */
+    position: relative;
+}
+
+.loading-indicator {
+    /* Add styles if you implement one */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    background-color: rgba(0,0,0,0.7);
+    padding: 10px;
+    border-radius: 5px;
+    display: none; /* Hide by default */
+}
+
+#video-error { /* Already defined in .error-message, adjust if needed */
+    margin-top: 10px;
+}
+
+#current-episode-title {
+    font-size: 1.4em; /* Slightly smaller than main section titles */
+    margin: 0 0 10px 0; /* Adjust margins */
+    color: #eee;
+    border: none; /* Remove border from H2 */
+    padding: 0;
+}
+
+/* --- Episode List Specific --- */
+.episode-section h3 {
+    font-size: 1.2em;
+    margin-top: 0; /* Remove top margin if inside padded section */
+    margin-bottom: 10px;
+    color: #eee;
+}
+.episode-list {
+    list-style: none;
+    padding: 0;
+    margin: 0; /* Reset margin for list */
+}
+.episode-list-item {
+    margin-bottom: 5px; /* Space between items */
+}
+.episode-button {
+    display: block;
+    width: 100%;
+    background: #333;
+    color: #ccc;
+    border: none;
+    padding: 8px 12px; /* Adjust padding */
+    margin-bottom: 5px; /* Matches list item margin */
+    text-align: left;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    white-space: nowrap; /* Prevent wrapping */
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.episode-button:hover {
+    background: #444; /* Slightly lighter on hover */
+    color: #fff;
+}
+.episode-button.active {
+    background: #e50914; /* Active color */
+    color: #fff;
+    font-weight: bold;
+}
+
+/* --- Download Buttons --- */
+.download-all-section {
+    margin-bottom: 20px; /* Space below download all */
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.05); /* Subtle background */
+    border: 1px solid #333;
+    border-radius: 5px;
+}
+.download-all-button {
+     display: inline-block;
+     padding: 8px 15px;
+     background-color: #007bff; /* Blue background */
+     color: white;
+     text-decoration: none;
+     border-radius: 5px;
+     font-weight: bold;
+     cursor: not-allowed; /* Indicate it's not functional yet */
+     opacity: 0.7;
+     font-size: 0.9em;
+}
+ .download-all-button:hover {
+    background-color: #0056b3;
+    opacity: 1.0;
+}
+.download-all-note {
+    font-size: 0.85em;
+    color: #aaa; /* Lighter note color */
+    margin-top: 8px;
+}
+.current-episode-actions {
+    margin-top: 10px; /* Space below video */
+    text-align: left;
+}
+#download-current-episode {
+    display: none; /* Initially hidden */
+    padding: 8px 15px;
+    background-color: #4CAF50; /* Green background */
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 0.9em; /* Match other buttons */
+    transition: background-color 0.2s ease;
+    cursor: pointer;
+}
+ #download-current-episode:hover {
+    background-color: #45a049; /* Darker green on hover */
+}
+ #download-current-episode.visible {
+    display: inline-block; /* Show when ready */
+}
+
+/* --- Comment Section Styles --- */
+.comments-section {
+    margin-top: 40px; /* Space above comments */
+    padding-top: 20px;
+    border-top: 1px solid #444; /* Separator line */
+    /* Take full width below player/episodes */
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.comments-section h3 { /* Style for "Comments" title */
+    color: #e5e5e5;
+    margin-bottom: 15px;
+    font-size: 1.4em; /* Match episode title size */
+    border-left: 3px solid #e50914; /* Add accent */
+    padding-left: 8px;
+}
+.comments-section h4 { /* Style for "Leave a Comment" title */
+    color: #ccc;
+    margin-top: 25px;
+    margin-bottom: 15px;
+    font-size: 1.2em;
+}
+
+.comments-list {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 25px;
+    max-height: 400px; /* Limit height and add scroll if needed */
+    overflow-y: auto;
+    background-color: #1e1e1e; /* Slightly different background */
+    padding: 15px;
+    border-radius: 4px;
+    border: 1px solid #2a2a2a; /* Subtle border */
+}
+
+.comments-list li {
+    border-bottom: 1px dashed #333; /* Separator between comments */
+    padding: 12px 5px; /* Add some padding */
+    margin-bottom: 10px;
+}
+ .comments-list li:last-child {
+    border-bottom: none; /* No border for the last comment */
+    margin-bottom: 0;
+    padding-bottom: 5px; /* Reduce padding slightly */
+}
+
+.comment-author {
+    font-weight: bold;
+    color: #eee; /* Brighter name */
+    margin-right: 8px;
+}
+
+.comment-timestamp {
+    font-size: 0.8em;
+    color: #888; /* Dim timestamp */
+}
+
+.comment-body {
+    margin-top: 6px; /* Space between author line and body */
+    color: #ccc; /* Comment text color */
+    white-space: pre-wrap; /* Preserve line breaks in comments */
+    word-wrap: break-word; /* Break long words */
+    line-height: 1.5; /* Slightly more line spacing */
+}
+
+#comment-form {
+    background-color: #1e1e1e; /* Match comments list background */
+    padding: 20px;
+    border-radius: 4px;
+    border: 1px solid #2a2a2a; /* Subtle border */
+}
+
+#comment-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #ccc;
+    font-size: 0.9em;
+}
+
+#comment-form input[type="text"],
+#comment-form textarea {
+    width: 100%;
+    padding: 10px; /* Slightly larger padding */
+    margin-bottom: 15px; /* More space below inputs */
+    background-color: #333;
+    border: 1px solid #555;
+    color: #e5e5e5;
+    border-radius: 3px;
+    box-sizing: border-box; /* Include padding in width */
+    font-size: 0.95em;
+}
+#comment-form input[type="text"]:focus,
+#comment-form textarea:focus {
+    border-color: #e50914; /* Highlight border on focus */
+    outline: none; /* Remove default browser outline */
+    box-shadow: 0 0 5px rgba(229, 9, 20, 0.5); /* Optional glow */
+}
+ #comment-form textarea {
+     min-height: 80px;
+     resize: vertical; /* Allow vertical resize */
+     line-height: 1.4;
+ }
+
+#comment-form button[type="submit"] {
+    padding: 10px 20px; /* Larger button */
+    background-color: #e50914; /* Netflix red */
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1em;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+ #comment-form button[type="submit"]:hover {
+    background-color: #f40612; /* Brighter red on hover */
+ }
+ #comment-form button[type="submit"]:active {
+    transform: scale(0.98); /* Slight press effect */
+ }
+
+#comment-error {
+    color: #f8d7da; /* Light red for errors */
+    background-color: rgba(229, 9, 20, 0.2); /* Transparent red background */
+    padding: 10px 15px;
+    border: 1px solid #e50914;
+    border-radius: 3px;
+    margin-top: 15px; /* Space above error */
+    display: none; /* Hidden by default */
+    font-size: 0.9em;
+}
+/* --- End Comment Styles --- */
+
+
+/* --- Responsiveness --- */
 @media (max-width: 768px) {
     .container {
-        max-width: 100%; /* Full width on smaller screens */
+        max-width: 100%;
         padding: 15px 10px;
     }
+    .main-header { padding: 10px 15px; }
+    .main-header h1 { font-size: 1.5em; }
+    h2 { font-size: 1.4em; margin-top: 20px; margin-bottom: 15px; }
 
-    .main-header h1 {
-        font-size: 1.5em;
+    /* Adjust anime grid for smaller screens */
+    .anime-grid {
+       justify-content: center;
+       margin: 0 -10px; /* Adjust based on item margin */
+       gap: 10px; /* Add gap if using grid */
     }
-
-    h2 {
-        font-size: 1.4em;
-        margin-top: 20px;
-        margin-bottom: 15px;
-    }
-
-   
     .anime-item {
-        width: 180px;
+        width: calc(50% - 20px); /* Example: 2 items per row with margin */
+        /* Or adjust grid columns */
         margin: 10px;
     }
     .anime-item img {
-        height: 260px;
+        height: auto; /* Let aspect ratio determine height */
+        aspect-ratio: 2/3; /* Common poster aspect ratio */
     }
-    */
 
-    /* Center items if flexbox wraps awkwardly */
-    .anime-grid {
-       justify-content: center; /* Center items on smaller screens */
-       margin: 0 -5px; /* Adjust negative margin if item margin changes */
+    /* Player layout adjustments */
+    .player-container {
+        flex-direction: column; /* Stack player and list vertically */
     }
-    .anime-item {
-        margin: 10px; /* Slightly reduce margin */
+    .video-section, .episode-section {
+        flex: none; /* Reset flex sizing */
+        width: 100%; /* Take full width */
+        min-width: unset;
+    }
+    .episode-section {
+        max-height: 40vh; /* Adjust max height for vertical layout */
     }
 }
 
 @media (max-width: 480px) {
-    .main-header {
-        padding: 10px 15px;
-    }
-    .main-header h1 {
-        font-size: 1.3em;
+    .main-header h1 { font-size: 1.3em; }
+    h2 { font-size: 1.2em; }
+
+    .container {
+        padding-left: 12px;
+        padding-right: 12px;
     }
 
-    h2 {
-        font-size: 1.2em;
+    /* Anime grid layout using CSS Grid for better control */
+    .anime-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr; /* Two equal columns */
+        gap: 12px; /* Gap between items */
+        justify-content: initial; /* Reset flex properties */
+        flex-wrap: initial;
+        margin: 0; /* Reset negative margins */
     }
-
-    /* Further reduce item size */
     .anime-item {
-        width: 150px; /* Example smaller width */
-        margin: 8px;
+        width: auto; /* Let grid control width */
+        margin: 0; /* Reset margin */
     }
     .anime-item img {
-        height: 220px; /* Example smaller height */
+        height: auto; /* Still use aspect ratio */
+        /* Consider adjusting aspect-ratio if needed */
     }
     .anime-item .title {
         font-size: 0.85em;
         min-height: 30px;
         padding: 8px;
     }
-     .anime-grid {
-       margin: 0 -8px;
+
+    /* Player adjustments for small screens */
+    .episode-button { padding: 6px 10px; font-size: 0.85em; }
+    .comments-section h3 { font-size: 1.3em; }
+    .comments-section h4 { font-size: 1.1em; }
+    #comment-form input[type="text"],
+    #comment-form textarea,
+    #comment-form button[type="submit"] {
+        font-size: 0.9em; /* Slightly smaller fonts in form */
     }
-}
-
-
-.player-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-}
-.video-section {
-    flex: 3; 
-    min-width: 300px;
-}
-.episode-section {
-    flex: 1; 
-    min-width: 200px;
-    max-height: 70vh; 
-    overflow-y: auto;
-    background-color: #1e1e1e;
-    padding: 10px;
-    border-radius: 5px;
-}
-#main-player {
-    width: 100%;
-    background-color: #000;
-    border-radius: 4px;
-}
-.episode-list { list-style: none; padding: 0; margin: 0; }
-.episode-button { display: block; width: 100%; background: #333; color: #ccc; border: none; padding: 8px 10px; margin-bottom: 5px; text-align: left; border-radius: 3px; cursor: pointer; }
-.episode-button:hover, .episode-button.active { background: #e50914; color: #fff; }
-
-
-
-
-
-
-/* static/style.css */
-
-/* ... (keep all your existing CSS rules before this block) ... */
-
-
-/* --- PERFECT FIT for smaller mobile screens (e.g., <= 480px) --- */
-/* This overrides the 600px styles for even smaller screens */
-@media (max-width: 480px) {
-    .container {
-        /* --- ADJUSTED PADDING --- */
-        /* Increase side padding for a little breathing room */
-        padding-left: 12px;  /* Increased from 5px (adjust 10px, 12px, 15px as needed) */
-        padding-right: 12px; /* Increased from 5px (adjust 10px, 12px, 15px as needed) */
-        /* Keep top/bottom padding if set previously, or default */
-    }
-
-    .anime-grid {
-        /* Grid layout remains the same */
-        display: grid;
-        grid-template-columns: 1fr 1fr; /* Two equal columns */
-        gap: 10px; /* Gap between items (adjust if desired) */
-
-        /* Reset Flexbox properties */
-        justify-content: initial;
-        flex-wrap: initial;
-        margin: 0;
-    }
-
-    .anime-item {
-        /* Width and margin remain handled by the grid */
-        width: auto;
-        margin: 0;
-    }
-
-    .anime-item img {
-        /* Keep height, but monitor if aspect ratio looks off */
-        height: 240px; /* (Adjust if necessary after padding change) */
-    }
-
-    .anime-item .title {
-        /* Title styles remain the same */
-        font-size: 0.8em;
-        min-height: 30px;
-        padding: 8px;
-    }
+    #comment-form { padding: 15px; }
 
     /* Optional: Single Column on VERY narrow screens */
     /*
@@ -317,17 +526,8 @@ h2 {
             grid-template-columns: 1fr; // Single column
             gap: 15px;
         }
-        .container {
-            padding-left: 10px; // Adjust padding for single column too
-            padding-right: 10px;
-        }
-        .anime-item img {
-            height: 300px;
-        }
     }
     */
 }
 
 /* --- End of Mobile Styles --- */
-
-/* ... (rest of your CSS file if any) ... */
