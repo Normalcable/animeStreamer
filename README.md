@@ -1,32 +1,30 @@
-# Anime Streamer 
+# Anime Streamer
 
-A simple and small projet web application built with Flask to browse and stream your local anime collection directly in your browser. and a basic commenting system per anime series.
+A simple and small project web application built with Flask to browse and stream your local anime collection directly in your browser, including a basic commenting system per anime series.
 
 ## Features
 
-*   **Browse Local Collection:** Displays anime found in your configured directory, showing icons for each series.
-*   **Video Streaming:** Plays MP4 files directly.
-*   **Episode Listing:** Automatically lists video files found within each anime's directory on the player page.
+*   **Browse Local Collection:** Displays anime found in your configured directory. **Requires an icon file in each anime folder to be listed.**
+*   **MP4 Video Streaming:** Plays `.mp4` files directly in the browser. **Other video formats are not supported for playback.**
+*   **Episode Listing:** Automatically lists `.mp4` video files found within each anime's directory on the player page.
 *   **Simple Commenting:** Allows users to leave comments (Name + Comment) on each anime page. Comments are stored locally in JSON files.
-*   **Download Link:** Provides a direct download link for the currently playing episode.
+*   **Download Link:** Provides a direct download link for the currently playing `.mp4` episode.
 *   **Configurable:** Set your main anime directory easily in the `app.py` file.
-*   **Icon Requirement:** (Optional - based on current code) Only lists anime on the main page if an `icon.*` file is present in the series folder.
 
 ## Screenshots
 
 **Main Library Page:**
 *(Showing the grid view of available anime)*
-![Screenshot from 2025-04-04 00-52-17](https://github.com/user-attachments/assets/deb9ad1b-4322-4d27-aeb0-66f00d4660c6)
+![Main Anime Library Page](https://github.com/user-attachments/assets/deb9ad1b-4322-4d27-aeb0-66f00d4660c6)
 
 **Anime Player Page:**
 *(Showing the video player, episode list, and comment section)*
-![Screenshot from 2025-04-04 00-53-54](https://github.com/user-attachments/assets/d281f38b-4c5f-4936-b3e6-0f8c81c56269)
+![Anime Player Page](https://github.com/user-attachments/assets/d281f38b-4c5f-4936-b3e6-0f8c81c56269)
 
 ## Requirements
 
 *   **Python 3.7+**
 *   **Flask:** (`pip install Flask`)
-*   **FFmpeg:** Must be installed on the server and accessible in the system's PATH. This is required for transcoding non-MP4 files.
 
 ## Setup & Installation
 
@@ -41,18 +39,11 @@ A simple and small projet web application built with Flask to browse and stream 
     # or if you have a requirements.txt
     # pip install -r requirements.txt
     ```
-3.  **Install FFmpeg:**
-    *   **Linux (Debian/Ubuntu):** `sudo apt update && sudo apt install ffmpeg`
-    *   **Linux (Fedora):** `sudo dnf install ffmpeg`
-    *   **macOS (using Homebrew):** `brew install ffmpeg`
-    *   **Windows:** Download from the [official FFmpeg website](https://ffmpeg.org/download.html), extract, and add the `bin` directory to your system's PATH environment variable.
-    Verify installation by running `ffmpeg -version` in your terminal.
-
-4.  **Create Comments Directory:** The application needs a place to store comment files. Create it in the project root:
+3.  **Create Comments Directory:** The application needs a place to store comment files. Create it in the project root:
     ```bash
     mkdir comments
     ```
-    (The application will try to create this automatically if it doesn't exist, but it's good practice to create it manually).
+    (The application will try to create this automatically if it doesn't exist).
 
 ## Configuration
 
@@ -63,8 +54,9 @@ A simple and small projet web application built with Flask to browse and stream 
     ```
 2.  **Prepare Anime Folders & Icons:**
     *   Ensure your `ANIME_DIR` contains subdirectories, where each subdirectory represents one anime series.
-    *   For an anime to appear on the main page (based on the current code), place an icon file named `icon.jpg`, `icon.png`, `icon.webp` (or any other image format) inside its corresponding folder. Example: `/path/to/your/anime/collection/Attack on Titan/icon.png`.
-    *   Video files (episodes) should be placed directly inside their respective anime series folders (e.g., `/path/to/your/anime/collection/Attack on Titan/S01E01.mkv`).
+    *   **IMPORTANT:** For an anime series to be displayed on the main page and function correctly, you **must** place an icon file inside its folder. Name the icon file starting with `icon.` followed by a common image extension (e.g., `icon.jpg`, `icon.png`, `icon.webp`).
+        *   Example: `/path/to/your/anime/collection/Attack on Titan/icon.png`
+    *   Video files (episodes) **must be in MP4 format (`.mp4`)** and placed directly inside their respective anime series folders (e.g., `/path/to/your/anime/collection/Attack on Titan/S01E01.mp4`).
 
 ## Running the Application
 
@@ -79,7 +71,7 @@ A simple and small projet web application built with Flask to browse and stream 
 
 ## How It Works
 
-*   **Backend:** Flask handles routing, file serving, comment loading/saving,
+*   **Backend:** Flask handles routing, serving `.mp4` video files and static assets (CSS, JS, icons), and comment loading/saving.
 *   **Frontend:** Standard HTML, CSS, and vanilla JavaScript for the user interface, video player control, and comment submission via `fetch`.
 *   **Comments Storage:** Comments are stored as simple `.json` files within the `comments/` directory, with one JSON file per anime series.
 
@@ -92,4 +84,4 @@ A simple and small projet web application built with Flask to browse and stream 
 *   Search and filtering functionality for the library.
 *   More robust error handling and logging.
 *   Improved UI/UX.
-*   Support for subtitles.
+*   Client-side subtitle support (e.g., using `<track>` elements with VTT files).
