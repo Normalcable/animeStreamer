@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ anime_name }}</title>
-    <!-- Link to external CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="icon" href="/static/favicon.ico">
 </head>
@@ -16,9 +15,11 @@
 
     <div class="container">
 
+        {# --- MODIFIED Check --- #}
         {% if not episodes %}
             <div class="error-message" style="padding: 20px;">
-                No compatible episodes found for this anime in the directory.
+                {# --- MODIFIED Message --- #}
+                No MP4 episodes found for this anime in the directory.
                 <br><br>
                 <a href="{{ url_for('index') }}" class="back-button">← Back to Library</a>
             </div>
@@ -53,7 +54,7 @@
                      </div>
                     <h3>Episodes</h3>
                     <ul class="episode-list">
-                        {% for episode in episodes %}
+                        {% for episode in episodes %} {# This list now only contains .mp4 filenames #}
                         <li class="episode-list-item">
                             <button class="episode-button"
                                     data-episode-src="{{ url_for('serve_anime', subpath=anime_name + '/' + episode) }}"
@@ -66,13 +67,9 @@
                 </div>
             </div>
 
-            <!-- ======================= -->
-            <!-- == COMMENT SECTION == -->
-            <!-- ======================= -->
+            <!-- Comment Section (Keep as is) -->
             <div class="comments-section">
                 <h3>Comments</h3>
-
-                <!-- == SWAPPED: Add Comment Form First == -->
                 <h4>Leave a Comment</h4>
                 <form id="comment-form" data-add-comment-url="{{ url_for('add_comment') }}">
                     <input type="hidden" name="anime_name" value="{{ anime_name | e }}">
@@ -88,14 +85,10 @@
                         <button type="submit">Post Comment</button>
                     </div>
                 </form>
-                <div id="comment-error" style="display: none;"></div> <!-- Keep error near form -->
-                <!-- == End Add Comment Form == -->
-
-
-                <!-- == SWAPPED: Display Existing Comments Second == -->
+                <div id="comment-error" style="display: none;"></div>
                 <ul class="comments-list" id="comments-list">
                     {% if comments %}
-                        {% for comment in comments | reverse %} {# Display newest first #}
+                        {% for comment in comments | reverse %}
                             <li>
                                 <span class="comment-author">{{ comment.name | e }}</span>
                                 <span class="comment-timestamp">({{ comment.timestamp }})</span>
@@ -106,17 +99,11 @@
                         <li id="no-comments-yet">No comments yet. Be the first!</li>
                     {% endif %}
                 </ul>
-                 <!-- == End Display Existing Comments == -->
-
             </div>
-            <!-- ======================= -->
-            <!-- == END COMMENT SECTION == -->
-            <!-- ======================= -->
-
+            <!-- End Comment Section -->
         {% endif %}
     </div>
 
-    <!-- Link to external JavaScript - Place at the end of body -->
     <script src="{{ url_for('static', filename='player.js') }}"></script>
 
 </body>
